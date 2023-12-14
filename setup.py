@@ -3,7 +3,7 @@ from os import path
 from setuptools import setup, find_packages
 from sys import version_info
 
-VERSION= '0.1.0'
+VERSION= '0.1.1'
 AUTHOR='Croketillo'
 AUTHOR_EMAIL='croketillo@gmail.com'
 CURR_PATH = "{}{}".format(path.abspath(path.dirname(__file__)), '/')
@@ -105,8 +105,7 @@ setup(
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
     license=read("LICENSE", is_encoding=False, ignore_raises=True),
-    packages=find_packages('src'),
-    package_dir={'': 'src'},
+    packages=find_packages(),
     install_requires=[
         'click',
         'colorama',
@@ -127,7 +126,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'sqlexp = main:cli',
+            'sqlexp = sqlite_explorer.main:cli',
         ],
     },
     keywords='sqlite database databases sql',

@@ -1,7 +1,7 @@
 import sqlite3
 import click
 from colorama import Fore, Style
-from src.functions import (
+from sqlite_explorer.functions import (
     get_table_schema_data,
     print_table_schema,
     print_table_data
@@ -118,3 +118,7 @@ def data(database, table_name, limit):
 
     print_table_data(data, table_name, column_names)
     connection.close()
+
+
+if __name__ == '__main__':
+    cli()
