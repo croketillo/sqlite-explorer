@@ -1,7 +1,8 @@
 import sqlite3
 import click
+import csv
 from colorama import Fore, Style
-from sqlite_explorer.functions import (
+from  sqlite_explorer.functions import (
     get_table_schema_data,
     print_table_schema,
     print_table_data
@@ -40,7 +41,7 @@ def table(database, table_name):
 
 @cli.command()
 @click.argument('database')
-def list_tables(database):
+def ls_tab(database):
     """List all tables in the database."""
     connection = sqlite3.connect(database)
     cursor = connection.cursor()
@@ -57,7 +58,7 @@ def list_tables(database):
 @cli.command()
 @click.argument('database')
 @click.argument('table_name')
-def list_columns(database, table_name):
+def ls_col(database, table_name):
     """List columns for a specific table."""
     connection = sqlite3.connect(database)
     cursor = connection.cursor()
@@ -119,6 +120,40 @@ def data(database, table_name, limit):
     print_table_data(data, table_name, column_names)
     connection.close()
 
+@cli.command()
+@click.argument('database')
+@click.argument('table_name')
+def sqlite_csv(database, table_name):
+    """Export table to CSV file"""
+    try:
+        csv_file=table_name+'.csv'
+        # Connect to the SQLite database
+        conn = sqlite3.connect(database)
+        cursor = conn.cursor()
+
+        # Retrieve all data from the table
+        cursor.execute(f"SELECT * FROM {table_name}")
+        data = cursor.fetchall()
+
+        # Retrieve column names
+        cursor.execute(f"PRAGMA table_info({table_name})")
+        columns = [column[1] for column in cursor.fetchall()]
+
+        # Write data to a CSV file
+        with open(csv_file, 'w', newline='') as csvfile:
+            csv_writer = csv.writer(csvfile)
+            
+            # Write column names as headers
+            csv_writer.writerow(columns)
+            
+            # Write data
+            csv_writer.writerows(data)
+
+        # Close the database connection
+        conn.close()
+        print(Fore.GREEN+Style.BRIGHT+f'\nSuccesfully export from [{database}>{table_name}] to {csv_file}.')
+    except sqlite3.OperationalError as e:
+        print(Fore.RED+Style.BRIGHT+f'Error exporting file: \n{e}')
 
 if __name__ == '__main__':
     cli()

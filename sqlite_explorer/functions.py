@@ -1,6 +1,7 @@
 from tabulate import tabulate
 from colorama import Fore, Style
 import sqlite3
+import csv
 
 def get_table_schema_data(connection, table_name):
     """

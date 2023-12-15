@@ -3,10 +3,11 @@
 SQLiteExplorer is a command-line application designed for the manipulation of SQLite databases. With SQLiteExplorer, you can easily visualize table schemas, execute SQL queries, manage data within tables, and list tables and columns. It provides a convenient and efficient way to interact with SQLite databases directly from the command line.
 
 ## Features
-Visualization of table schemas.
-Execution of SQL queries.
-Data management in tables.
-Listing of tables and columns.
+- Visualization of table schemas.
+- Execution of SQL queries.
+- Data management in tables.
+- Listing of tables and columns.
+- Export to csv files. (Version 0.1.2)
 
 ## Quick Start
 
