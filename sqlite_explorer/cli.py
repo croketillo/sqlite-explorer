@@ -1,6 +1,7 @@
 import sqlite3
 import click
 import csv
+import os
 from colorama import Fore, Style
 from  sqlite_explorer.functions import (
     get_table_schema_data,
@@ -151,9 +152,52 @@ def sqlite_csv(database, table_name):
 
         # Close the database connection
         conn.close()
-        print(Fore.GREEN+Style.BRIGHT+f'\nSuccesfully export from [{database}>{table_name}] to {csv_file}.')
+        print(Fore.GREEN+Style.BRIGHT+'\n>>>'+Fore.RESET+Style.NORMAL+f' Succesfully export from [{database}>{table_name}] to {csv_file}.\n')
     except sqlite3.OperationalError as e:
         print(Fore.RED+Style.BRIGHT+f'Error exporting file: \n{e}')
+        
+@cli.command()
+@click.argument('database')
+def migrate_file(database):
+    """Generates SQL file to export database."""
+    try:
+        database_name = os.path.splitext(os.path.basename(database))[0]
+
+        # Connect to the SQLite database
+        conn = sqlite3.connect(database)
+        cursor = conn.cursor()
+
+        # Get the list of tables in the database
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = cursor.fetchall()
+
+        # Generate SQL script for each table
+        output_file = f"{database_name}.sql"
+        with open(output_file, 'w') as sql_file:
+            for table in tables:
+                table_name = table[0]
+                
+                # Generate CREATE TABLE statement
+                cursor.execute(f"SELECT sql FROM sqlite_master WHERE name='{table_name}';")
+                create_table_sql = cursor.fetchone()[0]
+                sql_file.write(f"{create_table_sql};\n\n")
+
+                # Generate INSERT INTO statements
+                cursor.execute(f"SELECT * FROM {table_name};")
+                rows = cursor.fetchall()
+                for row in rows:
+                    columns = ', '.join(str(value) if value is not None else 'NULL' for value in row)
+                    insert_sql = f"INSERT INTO {table_name} VALUES ({columns});"
+                    sql_file.write(f"{insert_sql}\n")
+
+                sql_file.write("\n")
+
+        # Close the database connection
+        conn.close()
+        print(Fore.GREEN+Style.BRIGHT+'\n>>>'+Fore.RESET+Style.NORMAL+f' Succesfully export from [{database}] to {output_file}.\n')
+    except sqlite3.OperationalError as e:
+        print(Fore.RED+Style.BRIGHT+f'Error exporting file: \n{e}')
+
 
 if __name__ == '__main__':
     cli()
