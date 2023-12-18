@@ -38,6 +38,7 @@ Commands:
   exec        Execute a SQL statement in the database.
   ls-col      List columns for a specific table.
   ls-tab      List all tables in the database.
+  migrate-file  Generates SQL file to export database.
   schemas     Print schema for all tables in the database.
   sqlite-csv  Export table to CSV file
   table       Print schema for a specific table.
